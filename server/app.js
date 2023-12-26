@@ -5,7 +5,8 @@ const userRouter = require('./Routes/user.route')
 const authRouter = require('./Routes/auth.route')
 const cookieParser = require('cookie-parser')
 
-const cors = require('cors')
+const cors = require('cors');
+const verifyToken = require('./utils/verifyUser');
 
 const app = express();
 
@@ -13,15 +14,20 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-app.use(
-    cors({
-        origin: 'http://localhost:5173',
-    })
-);
+
+
+
+app.use(cors({
+  origin: 'http://localhost:5173',  
+  credentials: true,
+}));
+
+
+
 
 const port = 3000;
 
-
+app.use(verifyToken);
 
 app.use('/api/user', userRouter)
 app.use('/api/auth', authRouter)
