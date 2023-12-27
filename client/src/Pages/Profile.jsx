@@ -1,18 +1,20 @@
 
-import { useDispatch, useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { app } from '../firebase';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
-import { updateUserStart, updateUserSuccess, updateUserFailure } from '../redux/user/userSlice'
+import { app } from '../firebase';
+import { updateUserStart, updateUserSuccess, updateUserFailure, } from '../redux/user/userSlice'
+import { useDispatch } from 'react-redux';
 
 const Profile = () => {
-  const fileRef = useRef(null)
-  const { currentUser } = useSelector((state) => state.user)
-  const [file, setFile] = useState(undefined)
-  const [filePerc, setFilePerc] = useState(0)
+  const fileRef = useRef(null);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
+  const [file, setFile] = useState(undefined);
+  const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
 
   const dispatch = useDispatch();
@@ -53,7 +55,7 @@ console.log( currentUser);
   }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value })
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   }
 
   const handleSubmit = async (e) => {
@@ -69,19 +71,21 @@ console.log( currentUser);
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        credentials: 'include',
       };
 
       const res = await fetch(`http://localhost:3000/api/user/update/${currentUser._id}`, options);
 
       const data = await res.json();
       console.log(data);
+      console.log(error);
 
-      if (data.message === false) {
+      if (data.success === false) {
        dispatch(updateUserFailure(data.message))
         return;
       }
       dispatch(updateUserSuccess(data));
-      
+      setUpdateSuccess(true);
 
     } catch (error) {
       dispatch(updateUserFailure(error.message))
@@ -137,7 +141,7 @@ console.log( currentUser);
           onChange={handleChange}
         />
 
-        <button className='bg-blue-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>update</button>
+        <button disabled={loading} className='bg-blue-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>{loading ? 'Loading...' : 'Update'}</button>
 
       </form>
 
@@ -145,6 +149,11 @@ console.log( currentUser);
         <span className='text-red-600 cursor-pointer'>Delete account</span>
         <span className='text-red-600 cursor-pointer'>Sign out</span>
       </div>
+      <p className='text-red-600 mt-5 text-center'>{error ? error : ''}</p>
+      
+      <p className='text-green-600 mt-5 text-center'>
+        {updateSuccess ? 'User is updated successfully!' : ''}
+      </p>
     </div>
   )
 }
