@@ -1,5 +1,5 @@
 
-import {  useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useRef, useState } from 'react';
 import { useEffect } from 'react';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
@@ -20,7 +20,7 @@ const Profile = () => {
   const dispatch = useDispatch();
 
   console.log(formData);
-console.log( currentUser);
+  console.log(currentUser);
 
   useEffect(() => {
     if (file) {
@@ -64,15 +64,19 @@ console.log( currentUser);
     try {
 
       dispatch(updateUserStart());
-      
+
       const options = {
         method: 'POST',
+        credentials: 'include',
+        
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
        
+        body: JSON.stringify(formData),
+
       };
+
 
       const res = await fetch(`http://localhost:3000/api/user/update/${currentUser._id}`, options);
 
@@ -81,7 +85,7 @@ console.log( currentUser);
       console.log(error);
 
       if (data.success === false) {
-       dispatch(updateUserFailure(data.message))
+        dispatch(updateUserFailure(data.message))
         return;
       }
       dispatch(updateUserSuccess(data));
@@ -93,10 +97,10 @@ console.log( currentUser);
 
   };
 
-  const  handleDeleteUser = async  () =>{
+  const handleDeleteUser = async () => {
 
     try {
-      
+
       dispatch(deleteUserStart());
 
       const res = await fetch(`http://localhost:3000/api/user/delete/${currentUser._id}`, {
@@ -105,11 +109,10 @@ console.log( currentUser);
 
       const data = await res.json();
 
-      if(data.success === false){
+      if (data.success === false) {
         dispatch(deleteUserFailure(data.message))
         return;
       }
-      
 
       dispatch(deleteUserSuccess(data));
 
@@ -118,33 +121,33 @@ console.log( currentUser);
     }
   };
 
-  const handleSignOut = async () =>{
+  const handleSignOut = async () => {
 
     try {
 
       dispatch(signInStart());
 
-      const res = await  fetch('http://localhost:3000/api/auth/signout',{
+      const res = await fetch('http://localhost:3000/api/auth/signout', {
         method: 'GET',
       });
-  
-      const  data = await  res.json();
 
-      if(data.success === false){
+      const data = await res.json();
+
+      if (data.success === false) {
         dispatch(signFailure(data.message));
         return;
 
       }
-      
+
       dispatch(deleteUserSuccess(data));
-      
+
     } catch (error) {
       dispatch(deleteUserFailure(error.message))
     }
 
-   
 
-    
+
+
   }
 
   return (
@@ -154,7 +157,7 @@ console.log( currentUser);
       <input onChange={(e) => setFile(e.target.files[0])} type="file" ref={fileRef} hidden accept='image/*' />
 
 
-      <form onSubmit={ handleSubmit } className='flex flex-col gap-4' >
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4' >
         <img onClick={() => fileRef.current.click()} src={formData.avatar || currentUser.avatar} alt="profile" className='rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2' />
 
         <p className='text-sm self-center'>
@@ -200,11 +203,11 @@ console.log( currentUser);
       </form>
 
       <div className="flex justify-between mt-5">
-        <span className='text-red-600 cursor-pointer' onClick={ handleDeleteUser }>Delete account</span>
-        <span className='text-red-600 cursor-pointer' onClick={ handleSignOut }>Sign out</span>
+        <span className='text-red-600 cursor-pointer' onClick={handleDeleteUser}>Delete account</span>
+        <span className='text-red-600 cursor-pointer' onClick={handleSignOut}>Sign out</span>
       </div>
       <p className='text-red-600 mt-5 text-center'>{error ? error : ''}</p>
-      
+
       <p className='text-green-600 mt-5 text-center'>
         {updateSuccess ? 'User is updated successfully!' : ''}
       </p>

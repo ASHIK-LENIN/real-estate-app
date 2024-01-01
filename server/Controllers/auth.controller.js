@@ -33,11 +33,12 @@ const signIn = async (req, res, next) => {
         }
         const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET_KEY)
         const { password: pass, ...rest } = validUser._doc;
+        
         res
-            .cookie('access_token', token, { httpOnly: true })
+            .cookie('access_token', token, { httpOnly: true , sameSite: 'None', secure: true })
             .status(200)
             .json(rest);
-
+           
     } catch (error) {
         next(error);
     }
@@ -79,6 +80,7 @@ const google = async (req, res, next) => {
                 .cookie('access_token', token, { httpOnly: true })
                 .status(200)
                 .json(rest);
+                console.log(token);
         }
 
     } catch (error) {

@@ -3,6 +3,7 @@ const connectDB = require('./DB/connect')
 require('dotenv').config();
 const userRouter = require('./Routes/user.route')
 const authRouter = require('./Routes/auth.route')
+const listingRouter = require('./Routes/listing.route')
 const cookieParser = require('cookie-parser')
 
 const cors = require('cors');
@@ -16,21 +17,18 @@ app.use(cookieParser());
 
 
 
-
 app.use(cors({
   origin: 'http://localhost:5173',  
   credentials: true,
 }));
 
 
-
-
 const port = 3000;
 
+app.use('/api/user', userRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/listing', listingRouter);
 
-
-app.use('/api/user', userRouter)
-app.use('/api/auth', authRouter)
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
