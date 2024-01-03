@@ -6,6 +6,10 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { app } from '../firebase';
 import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserFailure, deleteUserStart, deleteUserSuccess, signInStart, signFailure, } from '../redux/user/userSlice'
 import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom'
+import axios from 'axios';
+axios.defaults.withCredentials = true
+
 
 const Profile = () => {
   const fileRef = useRef(null);
@@ -65,24 +69,10 @@ const Profile = () => {
 
       dispatch(updateUserStart());
 
-      const options = {
-        method: 'POST',
-        credentials: 'include',
-        
-        headers: {
-          'Content-Type': 'application/json',
-        },
-       
-        body: JSON.stringify(formData),
-
-      };
-
-
-      const res = await fetch(`http://localhost:3000/api/user/update/${currentUser._id}`, options);
-
-      const data = await res.json();
-      console.log(data);
-      console.log(error);
+      const res = await axios.post(`http://localhost:3000/api/user/update/${currentUser._id}`, formData, {
+        withCredentials: true
+      })
+      const data = await res.data;
 
       if (data.success === false) {
         dispatch(updateUserFailure(data.message))
@@ -103,11 +93,12 @@ const Profile = () => {
 
       dispatch(deleteUserStart());
 
-      const res = await fetch(`http://localhost:3000/api/user/delete/${currentUser._id}`, {
-        method: 'DELETE',
-      });
 
-      const data = await res.json();
+
+      const res = await axios.delete(`http://localhost:3000/api/user/delete/${currentUser._id}`, {
+        withCredentials: true
+      })
+      const data = res.data;
 
       if (data.success === false) {
         dispatch(deleteUserFailure(data.message))
@@ -127,11 +118,11 @@ const Profile = () => {
 
       dispatch(signInStart());
 
-      const res = await fetch('http://localhost:3000/api/auth/signout', {
-        method: 'GET',
-      });
+      const res = await axios.get('http://localhost:3000/api/auth/signout', {
+        withCredentials: true
+      })
 
-      const data = await res.json();
+      const data = await res.data;
 
       if (data.success === false) {
         dispatch(signFailure(data.message));
@@ -199,7 +190,9 @@ const Profile = () => {
         />
 
         <button disabled={loading} className='bg-blue-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>{loading ? 'Loading...' : 'Update'}</button>
-
+        <Link to='/create-listing' className='bg-green-600 rounded-lg p-3 text-white uppercase text-center hover:opacity-95' >
+          Create Listing
+        </Link>
       </form>
 
       <div className="flex justify-between mt-5">
