@@ -1,6 +1,7 @@
 const errorHandler = require("../utils/error")
 const bcrypt = require('bcryptjs')
 const User = require('../Models/users.model')
+const Listing = require('../Models/listing.model')
 
 
 const test = (req, res) => {
@@ -39,27 +40,41 @@ const updateUser = async (req, res, next) => {
 
 }
 
-const deleteUser = async (req, res, next) =>{
-    
- if(req.user.id != req.params.id){
-    return next(errorHandler(401, 'You can only delete your account !'))
- }
+const deleteUser = async (req, res, next) => {
 
- try {
-    await User.findByIdAndDelete(req.params.id);
-    
-    res.clearCookie('access_token');
-    res.status(200).json({ message:'User deleted successfully !'});
+    if (req.user.id != req.params.id) {
+        return next(errorHandler(401, 'You can only delete your account !'))
+    }
 
- } catch (error) {
-    next(error)
- }
+    try {
+        await User.findByIdAndDelete(req.params.id);
+
+        res.clearCookie('access_token');
+        res.status(200).json({ message: 'User deleted successfully !' });
+
+    } catch (error) {
+        next(error)
+    }
 
 
 }
 
+ const getUserListings = async (req, res, next) => {
+    if (req.user.id === req.params.id) {
+      try {
+        const listings = await Listing.find({ userRef: req.params.id });
+        res.status(200).json(listings);
+      } catch (error) {
+        next(error);
+      }
+    } else {
+      return next(errorHandler(401, 'You can only view your own listings!'));
+    }
+  };
 module.exports = {
     test,
     updateUser,
     deleteUser,
+    getUserListings,
+   
 }
