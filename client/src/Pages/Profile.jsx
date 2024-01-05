@@ -146,7 +146,9 @@ const Profile = () => {
   const handleShowListings = async () => {
     try {
       setShowListingsError(false);
-      const res = await axios.get(`http://localhost:3000/api/user/listing/${currentUser._id}`);
+      const res = await axios.get(`http://localhost:3000/api/user/listing/${currentUser._id}`, {
+        withCredentials: true
+      });
       const data = res.data;
 
       if (data.success === false) {
@@ -160,6 +162,26 @@ const Profile = () => {
       setShowListingsError(true);
     }
 
+  }
+
+  const handleListingDelete = async (listingId) => {
+    try {
+      const res = await axios.delete(`http://localhost:3000/api/listing/delete/${listingId}`, {
+        withCredentials: true
+      });
+      const data =  res.data;
+
+      console.log(data);
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      setUserListings((prev) =>
+        prev.filter((listing) => listing._id !== listingId)
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
   }
 
   return (
@@ -253,7 +275,7 @@ const Profile = () => {
               </Link>
 
               <div className='flex flex-col item-center'>
-                <button className='text-red-600 uppercase'>Delete</button>
+                <button onClick={() => handleListingDelete(listing._id)} className='text-red-600 uppercase'>Delete</button>
                 <button className='text-green-600 uppercase'>Edit</button>
               </div>
             </div>
