@@ -71,6 +71,8 @@ const deleteUser = async (req, res, next) => {
       return next(errorHandler(401, 'You can only view your own listings!'));
     }
   };
+
+  
 module.exports = {
     test,
     updateUser,
