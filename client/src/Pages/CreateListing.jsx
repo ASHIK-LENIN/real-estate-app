@@ -11,6 +11,11 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
+axios.defaults.withCredentials = true
+
+
+
+
 const CreateListing = () => {
   const { currentUser } = useSelector((state)=> state.user)
   const  navigate = useNavigate();
@@ -152,6 +157,7 @@ const CreateListing = () => {
       const res = await axios.post('http://localhost:3000/api/listing/create',{
         ...formData,
         userRef: currentUser._id,
+        withCredentials : true,
       }
         )
       const data = await res.data;
@@ -276,7 +282,7 @@ const CreateListing = () => {
                   required
                   className='p-3 border border-gray-300 rounded-lg'
                   onChange={handleChange}
-                  value={formData.bedrooms}
+                  value={formData.bathrooms}
                 />
                 <p>Bathrooms</p>
               </div>

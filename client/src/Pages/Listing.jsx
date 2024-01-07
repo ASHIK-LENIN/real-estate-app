@@ -5,39 +5,19 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css/bundle';
+import { useSelector } from 'react-redux';
 import {
   FaBath,
   FaBed,
   FaChair,
-  FaMapMarkedAlt,
   FaMapMarkerAlt,
   FaParking,
   FaShare,
 } from 'react-icons/fa';
+import Contact from '../Components/Contact';
 
 
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('Error caught by error boundary:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return <p className='text-center my-7 text-2xl text-red-600'>Something went wrong!</p>;
-    }
-
-    return this.props.children;
-  }
-}
 
 
 const Listing = () => {
@@ -46,8 +26,11 @@ const Listing = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [contact, setContact] = useState(false);
 
   const params = useParams();
+
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -79,7 +62,7 @@ const Listing = () => {
 
 
   return (
-    <ErrorBoundary>
+    
     <main>
       {loading && <p className='text-center my-7 text-2xl'>Loading...</p>}
 
@@ -167,12 +150,19 @@ const Listing = () => {
                 {listing.furnished ? 'Furnished' : 'Unfurnished'}
               </li>
             </ul>
+            {currentUser && listing.userRef !== currentUser._id && !contact && (
+              <button onClick={()=>setContact(true)} className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'>
+                Contact landlord
+              </button>
+            )}
+            {contact && <Contact listing={listing}/>}
+             
           </div>
         </div>
       )}
     </main>
 
-    </ErrorBoundary>
+   
   )
 }
 
