@@ -72,7 +72,7 @@ const deleteUser = async (req, res, next) => {
     }
   };
   
-
+  
   const getUser = async (req, res, next) =>{
     try {
         const user = await User.findById(req.params.id);
