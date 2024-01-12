@@ -19,7 +19,7 @@ const Search = () => {
 
     const [loading, setLoading] = useState(false);
     const [listings, setListings] = useState([]);
-    console.log(listings);
+    const [showMore, setShowMore] = useState(false);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(location.search);
@@ -54,10 +54,16 @@ const Search = () => {
         const fetchListings = async () => {
             setLoading(true);
             const searchQuery = urlParams.toString();
-            const res = await axios.get(`http://localhost:3000/api/listing/get?${searchQuery}`,{
-                withCredentials : true
+            const res = await axios.get(`http://localhost:3000/api/listing/get?${searchQuery}`, {
+                withCredentials: true
             });
             const data = await res.data;
+
+            if (data.length > 8) {
+                setShowMore(true)
+            }else{
+                setShowMore(false)
+            }
             console.log(data);
             setListings(data);
             setLoading(false);
@@ -115,6 +121,21 @@ const Search = () => {
         navigate(`/search?${searchQuery}`);
     };
 
+    const onShowMoreClick =  async () =>{
+        const numberOfListings = listings.length;
+        const startIndex = numberOfListings;
+        const urlParams  = new URLSearchParams(location.search);
+        urlParams.set('startIndex',startIndex);
+        const searchQuery = urlParams.toString();
+        const res = await axios.get(`http://localhost:3000/api/listing/get?${searchQuery}`);
+        const data = await res.data;
+
+        if(data.length < 9){
+            setShowMore(false);
+        }
+        setListings([...listings, ...data])
+    }
+
     return (
         <div className='flex flex-col md:flex-row'>
             <div className='p-7  border-b-2 md:border-r-2 md:min-h-screen'>
@@ -134,26 +155,26 @@ const Search = () => {
                         <label className='font-semibold'>Type:</label>
                         <div className='flex gap-2'>
                             <input type='checkbox' id='all' className='w-5'
-                              onChange={handleChange}
-                              checked={sidebardata.type === 'all'} />
+                                onChange={handleChange}
+                                checked={sidebardata.type === 'all'} />
                             <span>Rent & Sale</span>
                         </div>
                         <div className='flex gap-2'>
-                            <input type='checkbox' id='rent' className='w-5' 
-                            onChange={handleChange}
-                            checked={sidebardata.type === 'rent'}/>
+                            <input type='checkbox' id='rent' className='w-5'
+                                onChange={handleChange}
+                                checked={sidebardata.type === 'rent'} />
                             <span>Rent</span>
                         </div>
                         <div className='flex gap-2'>
-                            <input type='checkbox' id='sale' className='w-5' 
-                            onChange={handleChange}
-                            checked={sidebardata.type === 'sale'}/>
+                            <input type='checkbox' id='sale' className='w-5'
+                                onChange={handleChange}
+                                checked={sidebardata.type === 'sale'} />
                             <span>Sale</span>
                         </div>
                         <div className='flex gap-2'>
                             <input type='checkbox' id='offer' className='w-5'
-                            onChange={handleChange}
-                            checked={sidebardata.offer} />
+                                onChange={handleChange}
+                                checked={sidebardata.offer} />
                             <span>Offer</span>
                         </div>
                     </div>
@@ -161,26 +182,26 @@ const Search = () => {
                         <label className='font-semibold'>Amenities:</label>
                         <div className='flex gap-2'>
                             <input type='checkbox' id='parking' className='w-5'
-                            onChange={handleChange}
-                            checked={sidebardata.parking} />
+                                onChange={handleChange}
+                                checked={sidebardata.parking} />
                             <span>Parking</span>
                         </div>
                         <div className='flex gap-2'>
                             <input type='checkbox' id='furnished' className='w-5'
-                              onChange={handleChange}
-                              checked={sidebardata.furnished} />
+                                onChange={handleChange}
+                                checked={sidebardata.furnished} />
                             <span>Furnished</span>
                         </div>
                     </div>
                     <div className='flex items-center gap-2'>
                         <label className='font-semibold'>Sort:</label>
-                        <select 
-                      onChange={handleChange}
-                      defaultValue={'created_at_desc'}  
-                        id='sort_order' className='border rounded-lg p-3'>
+                        <select
+                            onChange={handleChange}
+                            defaultValue={'created_at_desc'}
+                            id='sort_order' className='border rounded-lg p-3'>
                             <option value='regularPrice_desc'>Price high to low</option>
-                            <option  value='regularPrice_asc'>Price low to hight</option>
-                            <option  value='createdAt_desc'>Latest</option>
+                            <option value='regularPrice_asc'>Price low to hight</option>
+                            <option value='createdAt_desc'>Latest</option>
                             <option value='createdAt_asc'>Oldest</option>
                         </select>
                     </div>
@@ -192,20 +213,27 @@ const Search = () => {
             <div className=' flex-1'>
                 <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>Listing results:</h1>
                 <div className="p-7 flex flex-wrap gap-4">
-                    { !loading && listings.length === 0 && (
+                    {!loading && listings.length === 0 && (
                         <p className='text-xl'>No listing found!</p>
                     )}
-                    { loading && (
+                    {loading && (
                         <p className='text-xl text-slate-700 text-center w-full'>
                             Loading...
-                            </p>
+                        </p>
                     )}
 
                     {!loading &&
-                    listings &&
-                    listings.map((listing) =>(
-                        <ListingItems key={listing._id} listing={listing}/>
-                    ))}
+                        listings &&
+                        listings.map((listing) => (
+                            <ListingItems key={listing._id} listing={listing} />
+                        ))}
+
+                        { showMore && (
+                            <button onClick={ onShowMoreClick } className='text-green-600 hover:underline p-7 text-center w-full'>
+                                Show more
+
+                            </button>
+                        )}
                 </div>
             </div>
 

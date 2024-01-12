@@ -161,6 +161,7 @@ const CreateListing = () => {
       }
         )
       const data = await res.data;
+      
       setLoading(false);
 
       navigate(`/listing/${data._id}`);
