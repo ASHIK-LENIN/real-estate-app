@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom'
 import { MdLocationOn } from 'react-icons/md'
-import { FaBaby, FaBath, FaBed } from 'react-icons/fa'
+import { FaBath, FaBed } from 'react-icons/fa'
 
 const ListingItems = ({ listing }) => {
     
@@ -40,14 +40,14 @@ const ListingItems = ({ listing }) => {
             <div className='font-bold text-xs flex items-center mt-6 gap-2'>
                <FaBed className='h-4 w-4 text-green-600  '/>
               {listing.bedrooms > 1
-                ? `${listing.bedrooms} beds `
-                : `${listing.bedrooms} bed `}
+                ? ` beds : ${listing.bedrooms}`
+                : ` bed : ${listing.bedrooms}`}
             </div>
             <div className='font-bold text-xs flex items-center mt-6 gap-2'>
             <FaBath className='h-4 w-4 text-green-600 '/>
               {listing.bathrooms > 1
-                ? `${listing.bathrooms} baths `
-                : `${listing.bathrooms} bath `}
+                ? `baths : ${listing.bathrooms}  `
+                : `bath : ${listing.bathrooms}  `}
             </div>
           </div>
 

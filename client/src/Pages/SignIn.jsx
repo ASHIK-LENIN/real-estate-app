@@ -13,7 +13,9 @@ function SignIn() {
 
   const { loading = false, error = null } = useSelector((state) => state.user);
 
-
+  
+  console.log(error);
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
