@@ -6,16 +6,38 @@ const jwt = require('jsonwebtoken')
 
 const signUp = async (req, res, next) => {
 
-    const { username, email, password } = req.body;
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const newUser = new User({ username, email, password: hashedPassword });
-    try {
-        await newUser.save();
-        res.status(201).json('User created successfully!')
+    // const { username, email, password } = req.body;
+    // const hashedPassword = bcrypt.hashSync(password, 10);
+    // const newUser = new User({ username, email, password: hashedPassword });
+    // try {
+    //     await newUser.save();
+    //     res.status(201).json('User created successfully!')
 
-    } catch (error) {
-        next(error);
+    // } catch (error) {
+    //     next(error);
+    // }
+
+    const { username, email, password } = req.body;
+
+  try {
+    
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: 'Email already in use' });
     }
+
+    const hashedPassword = await bcrypt.hashSync(password, 10);
+
+    const newUser = new User({ username, email, password: hashedPassword });
+    await newUser.save();
+
+    res.status(201).json({ success: true, message: 'User created successfully!' });
+
+  } catch (error) {
+
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+    next(error);
+  }
 
 }
 
@@ -26,6 +48,7 @@ const signIn = async (req, res, next) => {
        
         if (!validUser) {
             return next(errorHandler(404, 'User not found'));
+           
         }
         const validPassword = bcrypt.compareSync(password, validUser.password)
         if (!validPassword) {
@@ -41,6 +64,7 @@ const signIn = async (req, res, next) => {
            
     } catch (error) {
         next(error);
+       
     }
     
 }

@@ -12,10 +12,8 @@ function SignIn() {
   const [formData, setFormData] = useState({})
 
   const { loading = false, error = null } = useSelector((state) => state.user);
+  console.log('Error:', error);
 
-  
-  console.log(error);
-  
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -52,8 +50,9 @@ function SignIn() {
       dispatch(signInSuccess(data))
       navigate('/')
 
-    } catch (err) {
-      dispatch(signFailure(err.message))
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message;
+      dispatch(signFailure(errorMessage))
     }
 
   };

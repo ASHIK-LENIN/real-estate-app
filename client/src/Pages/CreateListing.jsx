@@ -17,8 +17,8 @@ axios.defaults.withCredentials = true
 
 
 const CreateListing = () => {
-  const { currentUser } = useSelector((state)=> state.user)
-  const  navigate = useNavigate();
+  const { currentUser } = useSelector((state) => state.user)
+  const navigate = useNavigate();
 
   const [files, setFiles] = useState([]);
 
@@ -43,7 +43,7 @@ const CreateListing = () => {
   const [error, setError] = useState(false)
   const [loading, setLoading] = useState(false)
   console.log(formData);
- 
+
 
   const handleImageSubmit = () => {
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
@@ -69,6 +69,8 @@ const CreateListing = () => {
         })
         .catch((err) => {
           setImageUploadError('Image upload failed (2 MB max per image)');
+          setUploading(false);
+
         });
 
     } else {
@@ -116,7 +118,7 @@ const CreateListing = () => {
     if (e.target.id === 'sell' || e.target.id === 'rent') {
       setFormData({
         ...formData,
-        type: e.target.id === 'sell' ? 'sale' : 'rent', 
+        type: e.target.id === 'sell' ? 'sale' : 'rent',
       });
     }
 
@@ -144,24 +146,24 @@ const CreateListing = () => {
 
     try {
 
-      if(formData.imageUrls < 1 ){
-        return  setError('You must upload atleast one image')
+      if (formData.imageUrls < 1) {
+        return setError('You must upload atleast one image')
       }
-      if(+formData.regularPrice < +formData.discountPrice){
+      if (+formData.regularPrice < +formData.discountPrice) {
         return setError('Discount price must be lower than Regular price')
       }
       setLoading(true)
       setError(false)
 
 
-      const res = await axios.post('http://localhost:3000/api/listing/create',{
+      const res = await axios.post('http://localhost:3000/api/listing/create', {
         ...formData,
         userRef: currentUser._id,
-        withCredentials : true,
+        withCredentials: true,
       }
-        )
+      )
       const data = await res.data;
-      
+
       setLoading(false);
 
       navigate(`/listing/${data._id}`);
@@ -301,31 +303,34 @@ const CreateListing = () => {
                 <div className='flex flex-col items-center'>
                   <p>Regular price</p>
                   {formData.type === 'rent' && (
-                     <span className='text-xs'>($ / month)</span>
+                    <span className='text-xs'>(₹ / month)</span>
                   )}
-                 
+
                 </div>
               </div>
 
               {formData.offer && (
-                 <div className='flex items-center gap-2'>
-                 <input
-                   type='number'
-                   id='discountPrice'
-                   min='1'
-                   max='10'
-                   required
-                   className='p-3 border border-gray-300 rounded-lg'
-                   onChange={handleChange}
-                   value={formData.discountPrice}
-                 />
-                 <div className='flex flex-col items-center'>
-                   <p>Discounted price</p>
-                   <span className='text-xs'>($ / month)</span>
-                 </div>
-               </div>
+                <div className='flex items-center gap-2'>
+                  <input
+                    type='number'
+                    id='discountPrice'
+                    min='1'
+                    max='10'
+                    required
+                    className='p-3 border border-gray-300 rounded-lg'
+                    onChange={handleChange}
+                    value={formData.discountPrice}
+                  />
+                  <div className='flex flex-col items-center'>
+                    <p>Discounted price</p>
+                    {formData.type === 'rent' && (
+                      <span className='text-xs'>(₹ / month)</span>
+                    )}
+
+                  </div>
+                </div>
               )}
-             
+
 
             </div>
           </div>
@@ -374,12 +379,12 @@ const CreateListing = () => {
                 </div>
               ))}
 
-            <button 
-            disabled={ uploading || loading}
-            className='p-3 bg-blue-600 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80' onClick={handleSubmit}>
-              { loading ? 'Creating...' : 'Create listing'}
+            <button
+              disabled={uploading || loading}
+              className='p-3 bg-blue-600 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80' onClick={handleSubmit}>
+              {loading ? 'Creating...' : 'Create listing'}
             </button>
-           {error && <p className='text-red-600 text-sm text-center'> {error}</p>}
+            {error && <p className='text-red-600 text-sm text-center'> {error}</p>}
           </div>
         </form>
       </main>

@@ -56,8 +56,8 @@ const deleteUser = async (req, res, next) => {
         next(error)
     }
 
-
 }
+
 
  const getUserListings = async (req, res, next) => {
     if (req.user.id === req.params.id) {

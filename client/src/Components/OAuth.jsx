@@ -8,29 +8,29 @@ axios.defaults.withCredentials = true
 
 const OAuth = () => {
 
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleGoogleClick = async () => {
-    
+
     try {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
 
       const result = await signInWithPopup(auth, provider);
-console.log(result);
+      console.log(result);
 
-const userData = {
-  name: result.user.displayName,
-  email: result.user.email,
-  photo: result.user.photoURL,
-};
-const res = await axios.post('http://localhost:3000/api/auth/google', userData,{
-  withCredentials:true
-} )
+      const userData = {
+        name: result.user.displayName,
+        email: result.user.email,
+        photo: result.user.photoURL,
+      };
+      const res = await axios.post('http://localhost:3000/api/auth/google', userData, {
+        withCredentials: true
+      })
       const data = await res.data;
 
-      console.log("data",data);
+      console.log("data", data);
 
       dispatch(signInSuccess(data));
       navigate('/');
